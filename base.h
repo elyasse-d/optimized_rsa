@@ -37,7 +37,6 @@ mpz_class modulo(mpz_class a, mpz_class n) {
 }
 
 
-
 void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
     // Phase 1 : Initialisation
     if (mpz_cmp(a, n) < 0) {
@@ -93,21 +92,18 @@ mpz_class ExpoMod(mpz_class base, mpz_class exp, mpz_class n) {
 
     // Étape 2 : Parcourir les bits de l'exposant
     while (exp > 0) {
-        // Si le bit de poids faible est à 1 (c'est-à-dire si exp est impair)
-        if ((exp & 1) == 1) { 
-            // On multiplie le résultat par la base courante, puis on réduit
-            result = modulo(result * base, n);
+        if ((exp & 1) == 1) {  // Si le bit de poids faible est à 1 (c'est-à-dire si exp est impair)
+              result = modulo(result * base, n); // On multiplie le résultat par la base courante, puis on réduit
         }
-        
         // On décale l'exposant d'un bit vers la droite (équivaut à diviser par 2)
         exp = exp >> 1; 
-        
         // On élève la base au carré pour le prochain bit, puis on réduit
         base = modulo(base * base, n); 
     }
-    
     return result;
 }
+
+
 // Exponentiation Modulaire : Fenêtres Glissantes (Sliding Window)
 // Calcule (base^exp) mod n de manière très optimisée
 mpz_class mod_exp_window(mpz_class base, mpz_class exp, mpz_class n) {
@@ -120,7 +116,7 @@ mpz_class mod_exp_window(mpz_class base, mpz_class exp, mpz_class n) {
     int num_precomp = 1 << (w - 1); 
     std::vector<mpz_class> g(num_precomp);
 
-    // --- 1. PHASE DE PRÉCALCUL ---
+    //  1. PHASE DE PRÉCALCUL
     // On précalcule base^1, base^3, base^5, ..., base^15
     g[0] = modulo(base, n);                   // base^1
     mpz_class base2 = modulo(base * base, n); // base^2 (sert à sauter de 2 en 2)
@@ -129,7 +125,7 @@ mpz_class mod_exp_window(mpz_class base, mpz_class exp, mpz_class n) {
         g[j] = modulo(g[j - 1] * base2, n);
     }
 
-    // --- 2. CALCUL DU NOMBRE DE BITS DE L'EXPOSANT ---
+    //  2. CALCUL DU NOMBRE DE BITS DE L'EXPOSANT
     // Totalement "artisanal" pour respecter vos contraintes (sans fonction GMP)
     int total_bits = 0;
     mpz_class temp_exp = exp;
@@ -138,7 +134,7 @@ mpz_class mod_exp_window(mpz_class base, mpz_class exp, mpz_class n) {
         temp_exp = temp_exp >> 1;
     }
 
-    // --- 3. PHASE D'ÉVALUATION (Lecture de gauche à droite) ---
+    //  3. PHASE D'ÉVALUATION (Lecture de gauche à droite)
     mpz_class result = 1;
     int i = total_bits - 1;
 
