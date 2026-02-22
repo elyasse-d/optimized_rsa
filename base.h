@@ -3,37 +3,39 @@
 #include <gmp.h>
 
 // La fonction renommée "modulo" comme vous le souhaitiez
-void modulo(mpz_t r, const mpz_t a, const mpz_t n) {
-    if (mpz_cmp(a, n) < 0) {
-        mpz_set(r, a);
-        return;
+mpz_class modulo(mpz_class a, mpz_class n) {
+    // Sécurité : n = 0
+    if (n == 0) {
+        std::cerr << "Erreur : Modulo par zéro !" << std::endl;
+        return 0;
     }
-    mpz_t m, next_m, two;
-    mpz_init_set(m, n);
-    mpz_init(next_m);
-    mpz_init_set_ui(two, 2);
-    mpz_set(r, a);
 
-    // Phase d'ascension
-    while (true) {
-        mpz_add(next_m, m, m);
-        if (mpz_cmp(next_m, r) <= 0) {
-            mpz_set(m, next_m);
-        } else {
-            break;
+    // Cas simple
+    if (a < n) return a;
+
+    mpz_class m = n;
+    mpz_class r = a;
+
+    // --- Phase 1 : Ascension ---
+    // On double m jusqu'à atteindre le plus grand multiple <= r
+    while ((m + m) <= r) {
+        m = m + m; // On n'utilise que l'addition
+    }
+
+    // --- Phase 2 : Descente ---
+    // On réduit r en utilisant les blocs m
+    while (m >= n) {
+        if (r >= m) {
+            r = r - m; // On n'utilise que la soustraction
         }
+        // Division par 2 via décalage binaire (Right Shift)
+        // C'est l'opération de base équivalente à mpz_tdiv_q_2exp
+        m = m/2; // Division par 2 (décalage à droite)
     }
 
-    // Phase de descente
-    while (mpz_cmp(m, n) >= 0) {
-        if (mpz_cmp(r, m) >= 0) {
-            mpz_sub(r, r, m);
-        }
-        mpz_tdiv_q(m, m, two);
-    }
-
-    mpz_clears(m, next_m, two, NULL);
+    return r;
 }
+
 
 
 void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
@@ -79,6 +81,7 @@ void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
 
     mpz_clears(m, next_m, r, two, p, next_p, NULL);
 }
+
 
 // Exponentiation Modulaire : Square and Multiply 
 // Calcule (base^exp) mod n 
