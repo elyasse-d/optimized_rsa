@@ -1,61 +1,61 @@
 #include <iostream>
-#include <gmp.h>
+#include <gmpxx.h>
 
-// La fonction renommée "modulo" comme vous le souhaitiez
-void modulo(mpz_t r, const mpz_t a, const mpz_t n) {
-    if (mpz_cmp(a, n) < 0) {
-        mpz_set(r, a);
-        return;
+mpz_class modulo(mpz_class a, mpz_class n) {
+    // Sécurité : n = 0
+    if (n == 0) {
+        std::cerr << "Erreur : Modulo par zéro !" << std::endl;
+        return 0;
     }
-    mpz_t m, next_m, two;
-    mpz_init_set(m, n);
-    mpz_init(next_m);
-    mpz_init_set_ui(two, 2);
-    mpz_set(r, a);
 
-    // Phase d'ascension
-    while (true) {
-        mpz_add(next_m, m, m);
-        if (mpz_cmp(next_m, r) <= 0) {
-            mpz_set(m, next_m);
-        } else {
-            break;
+    // Cas simple
+    if (a < n) return a;
+
+    mpz_class m = n;
+    mpz_class r = a;
+
+    // --- Phase 1 : Ascension ---
+    // On double m jusqu'à atteindre le plus grand multiple <= r
+    while ((m + m) <= r) {
+        m = m + m; // On n'utilise que l'addition
+    }
+
+    // --- Phase 2 : Descente ---
+    // On réduit r en utilisant les blocs m
+    while (m >= n) {
+        if (r >= m) {
+            r = r - m; // On n'utilise que la soustraction
         }
+        // Division par 2 via décalage binaire (Right Shift)
+        // C'est l'opération de base équivalente à mpz_tdiv_q_2exp
+        m = m/2; // Division par 2 (décalage à droite)
     }
 
-    // Phase de descente
-    while (mpz_cmp(m, n) >= 0) {
-        if (mpz_cmp(r, m) >= 0) {
-            mpz_sub(r, r, m);
-        }
-        mpz_tdiv_q(m, m, two);
-    }
-
-    mpz_clears(m, next_m, two, NULL);
+    return r;
 }
 
 int main() {
-    mpz_t a, n, res;
-    mpz_inits(a, n, res, NULL);
-
-    // Test avec de grands nombres
-    mpz_set_str(a, "1000000000000000000000000000000", 10);
-    mpz_set_str(n, "987654321", 10);
+    // Déclaration et initialisation (équivalent à mpz_inits et mpz_set_str)
+    mpz_class a("1000000000000000000000000000000");
+    mpz_class n("987654321");
+    mpz_class res;
 
     // Appel de la fonction
-    modulo(res, a, n);
+    res = modulo(a, n);
 
-    gmp_printf("Dividende a : %Zd\n", a);
-    gmp_printf("Diviseur n  : %Zd\n", n);
-    gmp_printf("Reste (a mod n) : %Zd\n", res);
+    // Affichage formaté (comme ton gmp_printf)
+    // Avec mpz_class, on utilise simplement std::cout
+    std::cout << "Dividende a : " << a << std::endl;
+    std::cout << "Diviseur n  : " << n << std::endl;
+    std::cout << "Reste (a mod n) : " << res << std::endl;
 
-    mpz_clears(a, n, res, NULL);
+    // Note : Avec mpz_class, mpz_clears est automatique à la fin du bloc }
     return 0;
 }
 
 
 
-
+// -----La fonction quotient -------
 void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
     // Phase 1 : Initialisation
     if (mpz_cmp(a, n) < 0) {
@@ -93,27 +93,9 @@ void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
             mpz_add(q, q, p);      // ON AJOUTE LA PUISSANCE AU QUOTIENT
         }
         // On divise par 2 pour passer à l'étape inférieure
-        mpz_tdiv_q(m, m, two);
-        mpz_tdiv_q(p, p, two);
+        mpz_fdiv_q(m, m, two);
+        mpz_fdiv_q(p, p, two);
     }
 
     mpz_clears(m, next_m, r, two, p, next_p, NULL);
-}
-
-int main() {
-    mpz_t a, n, q_res;
-    mpz_inits(a, n, q_res, NULL);
-
-    // Test avec tes grands nombres
-    mpz_set_str(a, "345678989589806", 10);
-    mpz_set_str(n, "6740724003", 10);
-
-    quotient(q_res, a, n);
-
-    gmp_printf("Dividende a : %Zd\n", a);
-    gmp_printf("Diviseur n  : %Zd\n", n);
-    gmp_printf("Quotient q  : %Zd\n", q_res); // Affiche la somme des 2^i
-
-    mpz_clears(a, n, q_res, NULL);
-    return 0;
 }
