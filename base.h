@@ -35,48 +35,39 @@ mpz_class modulo(mpz_class a, mpz_class n) {
 }
 
 // -----La fonction quotient -------
-void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
-    // Phase 1 : Initialisation
-    if (mpz_cmp(a, n) < 0) {
-        mpz_set_ui(q, 0); // Si a < n, le quotient entier est 0
-        return;
+mpz_class division_euclidienne(mpz_class a, mpz_class n, mpz_class &r) {
+    if (n == 0) {
+        std::cerr << "Erreur : Division par zéro !" << std::endl;
+        return 0;
     }
 
-    mpz_t m, next_m, r, two, p, next_p;
-    mpz_init_set(m, n);           // Le bloc multiple de n (m = n * 2^i)
-    mpz_init(next_m);
-    mpz_init_set_ui(two, 2);
-    mpz_init_set_ui(p, 1);        // La puissance de 2 actuelle (p = 2^i)
-    mpz_init(next_p);
-    mpz_init_set(r, a);           // r est le reste temporaire qu'on réduit
-    mpz_set_ui(q, 0);             // q est la somme des p (le quotient final)
+    if (a < n) {
+        r = a;   
+        return 0; 
+    }
 
-    // Phase 2 : Ascension
-    // On cherche le plus grand m <= a, et on garde la puissance p correspondante
-    while (true) {
-        mpz_add(next_m, m, m);
-        mpz_add(next_p, p, p);
-        if (mpz_cmp(next_m, r) <= 0) {
-            mpz_set(m, next_m);
-            mpz_set(p, next_p);
-        } else {
-            break;
+    r = a;           
+    mpz_class q = 0; // q est créé ici
+    mpz_class m = n; 
+    mpz_class p = 1; 
+
+    // Phase 1 : Ascension
+    while ((m + m) <= r) {
+        m = m + m; 
+        p = p + p; 
+    }
+
+    // Phase 2 : Descente
+    while (m >= n) {
+        if (r >= m) {
+            r = r - m; 
+            q = q + p; // On remplit q
         }
+        m = m / 2; 
+        p = p / 2; 
     }
 
-    // Phase 3 : Descente
-    // Chaque fois qu'on peut soustraire le bloc m, on ajoute p au quotient
-    while (mpz_cmp(m, n) >= 0) {
-        if (mpz_cmp(r, m) >= 0) {
-            mpz_sub(r, r, m);      // On réduit le reste
-            mpz_add(q, q, p);      // ON AJOUTE LA PUISSANCE AU QUOTIENT
-        }
-        // On divise par 2 pour passer à l'étape inférieure
-        mpz_fdiv_q(m, m, two);
-        mpz_fdiv_q(p, p, two);
-    }
-
-    mpz_clears(m, next_m, r, two, p, next_p, NULL);
+    return q; // On renvoie la valeur finale de q
 }
 
 // Exponentiation Modulaire : Square and Multiply 
