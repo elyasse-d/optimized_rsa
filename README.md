@@ -21,20 +21,32 @@ Verify()
 
 
 
-```
-    fonction: 
-    ExpoMod()  m^e[n]
+```  
+    base.h
+    ==============
     modulo() //modulo_doublement =a[n]
     inversMod()
     op_pgcd()
+    ExpoMod()  m^e[n]
+    methodes.h
     genAlea()
     primTest() 
-    ==============
     stringToNum()
     numToString()
-    ==============
-    CTR
-    ==============
+
+    base_ctr.h
+    =============
+
+
+    main()
+    ===============
+    keyGen()
+    enc()
+    dec()
+    sing()
+    verify()
+
+
 
 
 

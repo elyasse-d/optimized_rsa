@@ -63,7 +63,7 @@ std::tuple<mpz_class, mpz_class, mpz_class> extended_gcd(mpz_class A, mpz_class 
 
 // Inverse modulaire en utilisant l'algorithme d'Euclide étendu
 mpz_class invmod(const mpz_class& A, const mpz_class& n) {
-    auto [gcd, x, y] = extended_gcd(mod(A,n), n);
+    auto [gcd, x, y] = extended_gcd(modulo(A,n), n);
     if (gcd != 1) {
         throw std::runtime_error("Inverse modulaire inexistant");
     }
