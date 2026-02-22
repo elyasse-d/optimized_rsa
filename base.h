@@ -1,4 +1,5 @@
 #include <iostream>
+#include <gmpxx.h>
 #include <gmp.h>
 
 // La fonction renommée "modulo" comme vous le souhaitiez
@@ -33,27 +34,6 @@ void modulo(mpz_t r, const mpz_t a, const mpz_t n) {
 
     mpz_clears(m, next_m, two, NULL);
 }
-
-int main() {
-    mpz_t a, n, res;
-    mpz_inits(a, n, res, NULL);
-
-    // Test avec de grands nombres
-    mpz_set_str(a, "1000000000000000000000000000000", 10);
-    mpz_set_str(n, "987654321", 10);
-
-    // Appel de la fonction
-    modulo(res, a, n);
-
-    gmp_printf("Dividende a : %Zd\n", a);
-    gmp_printf("Diviseur n  : %Zd\n", n);
-    gmp_printf("Reste (a mod n) : %Zd\n", res);
-
-    mpz_clears(a, n, res, NULL);
-    return 0;
-}
-
-
 
 
 void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
@@ -100,20 +80,29 @@ void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
     mpz_clears(m, next_m, r, two, p, next_p, NULL);
 }
 
-int main() {
-    mpz_t a, n, q_res;
-    mpz_inits(a, n, q_res, NULL);
+// Exponentiation Modulaire : Square and Multiply 
+// Calcule (base^exp) mod n 
+mpz_class ExpoMod(mpz_class base, mpz_class exp, mpz_class n) {
+    mpz_class result = 1;
+    
+    // Étape 1 : Réduire la base initiale avec la fonction modulo
+    base = modulo(base, n); 
 
-    // Test avec tes grands nombres
-    mpz_set_str(a, "345678989589806", 10);
-    mpz_set_str(n, "6740724003", 10);
-
-    quotient(q_res, a, n);
-
-    gmp_printf("Dividende a : %Zd\n", a);
-    gmp_printf("Diviseur n  : %Zd\n", n);
-    gmp_printf("Quotient q  : %Zd\n", q_res); // Affiche la somme des 2^i
-
-    mpz_clears(a, n, q_res, NULL);
-    return 0;
+    // Étape 2 : Parcourir les bits de l'exposant
+    while (exp > 0) {
+        // Si le bit de poids faible est à 1 (c'est-à-dire si exp est impair)
+        if ((exp & 1) == 1) { 
+            // On multiplie le résultat par la base courante, puis on réduit
+            result = modulo(result * base, n);
+        }
+        
+        // On décale l'exposant d'un bit vers la droite (équivaut à diviser par 2)
+        exp = exp >> 1; 
+        
+        // On élève la base au carré pour le prochain bit, puis on réduit
+        base = modulo(base * base, n); 
+    }
+    
+    return result;
 }
+
