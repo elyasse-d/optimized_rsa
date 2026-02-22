@@ -2,7 +2,7 @@
 #include <gmpxx.h>
 
 // a mod m en utilisant uniquement les 4 opérations de base.
-mpz_class mod(const mpz_class& a, const mpz_class& m) {
+mpz_class modulo(const mpz_class& a, const mpz_class& m) {
     mpz_class q = a / m;     // quotient
     mpz_class r = a - q * m; // reste
 
@@ -16,23 +16,23 @@ mpz_class mod(const mpz_class& a, const mpz_class& m) {
 mpz_class modexp(mpz_class base, mpz_class exp, const mpz_class& modn) {
     mpz_class result = 1;
 
-    base = mod(base, modn);
+    base = modulo(base, modn);
 
     while (exp > 0) {
         if (mod(exp, 2) == 1) {
-            result = mod(result * base, modn);
+            result = modulo(result * base, modn);
         }
 
         exp = exp / 2;
-        base = mod(base * base, modn);
+        base = modulo(base * base, modn);
     }
 
     return result;
 }
 
 mpz_class mulmod(const mpz_class& A, const mpz_class& B, const mpz_class& n) {
-    mpz_class a = mod(A, n);
-    mpz_class b = mod(B, n);
+    mpz_class a = modulo(A, n);
+    mpz_class b = modulo(B, n);
     mpz_class prod = a * b;
     return mod(prod, n);
 }
@@ -67,7 +67,7 @@ mpz_class invmod(const mpz_class& A, const mpz_class& n) {
     if (gcd != 1) {
         throw std::runtime_error("Inverse modulaire inexistant");
     }
-    return mod(x, n); // on normalise avec mod pour avoir un positif
+    return modulo(x, n); // on normalise avec mod pour avoir un positif
 }
 
 int main() {

@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace rsa_psa {
+using namespace std;
 
 struct MontgomeryContext {
 	mpz_class n;
@@ -21,10 +21,10 @@ struct MontgomeryContext {
 
 inline MontgomeryContext make_montgomery_context(const mpz_class& modulus) {
 	if (modulus <= 0) {
-		throw std::invalid_argument("modulus must be > 0");
+		throw invalid_argument("modulus must be > 0");
 	}
 	if (!mpz_odd_p(modulus.get_mpz_t())) {
-		throw std::invalid_argument("modulus must be odd for Montgomery arithmetic");
+		throw invalid_argument("modulus must be odd for Montgomery arithmetic");
 	}
 
 	MontgomeryContext ctx;
@@ -41,7 +41,7 @@ inline MontgomeryContext make_montgomery_context(const mpz_class& modulus) {
 
 	mpz_class n_inv;
 	if (mpz_invert(n_inv.get_mpz_t(), ctx.n.get_mpz_t(), ctx.r.get_mpz_t()) == 0) {
-		throw std::runtime_error("failed to invert n modulo R");
+		throw runtime_error("failed to invert n modulo R");
 	}
 	ctx.n_prime = (ctx.r - n_inv) & ctx.r_mask;
 
@@ -73,12 +73,12 @@ inline mpz_class from_montgomery(const mpz_class& x, const MontgomeryContext& ct
 	return mont_mul(x, 1, ctx);
 }
 
-inline std::vector<unsigned long> exponent_set_bits(const mpz_class& exponent) {
+inline vector<unsigned long> exponent_set_bits(const mpz_class& exponent) {
 	if (exponent < 0) {
-		throw std::invalid_argument("exponent must be >= 0");
+		throw invalid_argument("exponent must be >= 0");
 	}
 
-	std::vector<unsigned long> bits;
+	vector<unsigned long> bits;
 	const unsigned long bit_len = mpz_sizeinbase(exponent.get_mpz_t(), 2);
 	for (unsigned long i = 0; i < bit_len; ++i) {
 		if (mpz_tstbit(exponent.get_mpz_t(), i) != 0) {
@@ -88,42 +88,42 @@ inline std::vector<unsigned long> exponent_set_bits(const mpz_class& exponent) {
 	return bits;
 }
 
-inline std::vector<std::vector<unsigned long>> split_indices(
-	const std::vector<unsigned long>& indices,
-	std::size_t split_size) {
+inline vector<vector<unsigned long>> split_indices(
+	const vector<unsigned long>& indices,
+	size_t split_size) {
 	if (split_size == 0) {
-		throw std::invalid_argument("split_size must be > 0");
+		throw invalid_argument("split_size must be > 0");
 	}
 
-	std::vector<std::vector<unsigned long>> groups;
+	vector<vector<unsigned long>> groups;
 	groups.reserve((indices.size() + split_size - 1) / split_size);
 
-	for (std::size_t i = 0; i < indices.size(); i += split_size) {
-		const std::size_t end = std::min(i + split_size, indices.size());
+	for (size_t i = 0; i < indices.size(); i += split_size) {
+		const size_t end = min(i + split_size, indices.size());
 		groups.emplace_back(indices.begin() + static_cast<long>(i), indices.begin() + static_cast<long>(end));
 	}
 
 	return groups;
 }
 
-inline mpz_class rsa_encrypt_psa_montgomery(
+inline mpz_class psa_montgomery(
 	const mpz_class& message,
 	const mpz_class& public_exponent,
 	const mpz_class& modulus,
-	std::size_t split_size = 8,
-	std::uint64_t permutation_seed = 0xC0FFEEULL) {
+	size_t split_size = 8,
+	uint64_t permutation_seed = 0xC0FFEEULL) {
 	MontgomeryContext ctx = make_montgomery_context(modulus);
 	const mpz_class m_mont = to_montgomery(message, ctx);
 	const mpz_class one_mont = to_montgomery(1, ctx);
 
-	std::vector<unsigned long> bit_positions = exponent_set_bits(public_exponent);
-	std::mt19937_64 rng(permutation_seed);
-	std::shuffle(bit_positions.begin(), bit_positions.end(), rng);
+	vector<unsigned long> bit_positions = exponent_set_bits(public_exponent);
+	mt19937_64 rng(permutation_seed);
+	shuffle(bit_positions.begin(), bit_positions.end(), rng);
 
 	const auto groups = split_indices(bit_positions, split_size);
-	const unsigned long max_bit = bit_positions.empty() ? 0UL : *std::max_element(bit_positions.begin(), bit_positions.end());
+	const unsigned long max_bit = bit_positions.empty() ? 0UL : *max_element(bit_positions.begin(), bit_positions.end());
 
-	std::vector<mpz_class> powers(max_bit + 1, one_mont);
+	vector<mpz_class> powers(max_bit + 1, one_mont);
 	if (max_bit > 0 || public_exponent == 1) {
 		powers[0] = m_mont;
 		for (unsigned long i = 1; i <= max_bit; ++i) {
@@ -142,7 +142,5 @@ inline mpz_class rsa_encrypt_psa_montgomery(
 
 	return from_montgomery(acc, ctx);
 }
-
-}  // namespace rsa_psa
 
 #endif  // FONCTION_H
