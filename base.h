@@ -34,26 +34,6 @@ mpz_class modulo(mpz_class a, mpz_class n) {
     return r;
 }
 
-int main() {
-    // Déclaration et initialisation (équivalent à mpz_inits et mpz_set_str)
-    mpz_class a("1000000000000000000000000000000");
-    mpz_class n("987654321");
-    mpz_class res;
-
-    // Appel de la fonction
-    res = modulo(a, n);
-
-    // Affichage formaté (comme ton gmp_printf)
-    // Avec mpz_class, on utilise simplement std::cout
-    std::cout << "Dividende a : " << a << std::endl;
-    std::cout << "Diviseur n  : " << n << std::endl;
-    std::cout << "Reste (a mod n) : " << res << std::endl;
-
-    // Note : Avec mpz_class, mpz_clears est automatique à la fin du bloc }
-    return 0;
-}
-
-
 
 // -----La fonction quotient -------
 void quotient(mpz_t q, const mpz_t a, const mpz_t n) {
