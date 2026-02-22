@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <numeric>
 #include <array>
+
 using namespace std;
 
 // Calcule r = a mod n via la méthode de "doublement + soustraction".
