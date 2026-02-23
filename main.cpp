@@ -50,7 +50,7 @@ void rsa_crt(){
 
         string message = "Hello RSA CRT!";
         mpz_class ciphertext;
-        enc_crt(ciphertext, message, e, n);
+        enc(ciphertext, message, e, n);
         cout << "Ciphertext: " << ciphertext.get_str(16) << endl;
 
         string decrypted;
@@ -61,7 +61,7 @@ void rsa_crt(){
         sing_crt(signature, message, p, q, dp, dq, qinv);
         cout << "Signature: " << signature.get_str(16) << endl;
 
-        bool verified = verify_crt(signature, message, e, n);
+        bool verified = verify(signature, message, e, n);
         cout << "Signature verified: " << verified << endl;
     }
 }

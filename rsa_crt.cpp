@@ -41,15 +41,6 @@ void keyGen_crt(unsigned long bits, gmp_randclass& rng,
 }
 
 // ============================================================
-// Enc CRT — chiffrement identique au mode standard
-//   c = m^e mod n  (Square-and-Multiply)
-// ============================================================
-void enc_crt(mpz_class& c, string m, const mpz_class& e, const mpz_class& n) {
-    stringToNum(c, m);
-    c = ExpoMod(c, e, n);
-}
-
-// ============================================================
 // Dec CRT — déchiffrement via le Théorème des Restes Chinois
 //   m1 = c^dp mod p
 //   m2 = c^dq mod q
@@ -84,16 +75,4 @@ void sing_crt(mpz_class& signature, const string& message,
 
     mpz_class h = modulo(qinv * (s1 - s2 + p), p);
     signature = s2 + h * q;
-}
-
-// ============================================================
-// Verify CRT — vérification identique au mode standard
-//   recovered = s^e mod n, compare au message original
-// ============================================================
-bool verify_crt(const mpz_class& signature, const string& message,
-                const mpz_class& e, const mpz_class& n) {
-    mpz_class m_num;
-    stringToNum(m_num, message);
-    mpz_class recovered = ExpoMod(signature, e, n);
-    return recovered == m_num;
 }
