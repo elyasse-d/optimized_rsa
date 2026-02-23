@@ -25,9 +25,38 @@ void keyGen(unsigned long bits, gmp_randclass& rng, mpz_class& n, mpz_class& e, 
 
 void enc(mpz_class& c, string m, const mpz_class& e, const mpz_class& n) {
     stringToNum(c, m);
-    c = mod_exp_window(c, e, n);
+    c = ExpoMod(c, e, n);
 }
 
-void dec();
+void dec(string& m, const mpz_class& c, const mpz_class& d, const mpz_class& n) {
+    mpz_class decrypted;
+    decrypted = mod_exp_window(c, d, n);
+    numToString(m, decrypted);
+}
 void sing();  
 bool verify();
+
+
+int main() {
+    gmp_randclass rng(gmp_randinit_default);
+    rng.seed(time(nullptr));
+
+    mpz_class n, e, d, p, q, phi;
+    keyGen(1024, rng, n, e, d, p, q, phi);
+
+    cout << "Public key (n, e): (" << n.get_str(16) << ", " << e.get_str(16) << ")" << endl;
+    cout << "Private key (d): " << d.get_str(16) << endl;
+
+    string message = "Hello RSA!";
+    mpz_class ciphertext;
+    enc(ciphertext, message, e, n);
+    cout << "Ciphertext: " << ciphertext.get_str(16) << endl;
+
+    mpz_class decrypted;
+    dec(decrypted, ciphertext, d, n);
+    string decrypted_message;
+    numToString(decrypted_message, decrypted);
+    cout << "Decrypted message: " << decrypted_message << endl;
+
+    return 0;
+}

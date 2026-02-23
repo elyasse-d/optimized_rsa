@@ -37,7 +37,6 @@ mpz_class modulo(mpz_class a, mpz_class n) {
 }
 
 
-
 mpz_class quotient(mpz_class a, mpz_class n) {
     // Cas simple : a < n => quotient = 0
     if (a < n) return 0;
@@ -172,4 +171,12 @@ void stringToNum(mpz_class& num, const string& str) {
         num = (num << 8) + static_cast<unsigned char>(c);
     }
 }
-
+void numToString(string& str, const mpz_class& num) {
+    mpz_class temp = num;
+    str.clear();
+    while (temp > 0) {
+        char c = static_cast<char>(temp.get_ui() & 0xFF);
+        str = c + str;
+        temp = temp >> 8;
+    }
+}

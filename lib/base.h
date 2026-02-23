@@ -7,9 +7,10 @@
 
 mpz_class modulo(mpz_class a, mpz_class n);
 mpz_class quotient(mpz_class a, mpz_class n);
+mpz_class division_euclidienne(mpz_class a, mpz_class n, mpz_class &r);
 
 mpz_class ExpoMod(mpz_class base, mpz_class exp, mpz_class n);
 mpz_class mod_exp_window(mpz_class base, mpz_class exp, mpz_class n);
 void stringToNum(mpz_class& num, const std::string& str);
-
+void numToString(std::string& str, const mpz_class& num);
 #endif  // BASE_H
