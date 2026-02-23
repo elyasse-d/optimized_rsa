@@ -3,7 +3,7 @@
 #include "lib/base.h"
 #include "lib/prime_lib.h"
 
-
+using namespace std;
 
 
 void keyGen(unsigned long bits, gmp_randclass& rng, mpz_class& n, mpz_class& e, mpz_class& d, mpz_class& p, mpz_class& q, mpz_class& phi) {
@@ -33,6 +33,7 @@ void dec(string& m, const mpz_class& c, const mpz_class& d, const mpz_class& n) 
     decrypted = mod_exp_window(c, d, n);
     numToString(m, decrypted);
 }
+
 void sing();  
 bool verify();
 
@@ -52,11 +53,9 @@ int main() {
     enc(ciphertext, message, e, n);
     cout << "Ciphertext: " << ciphertext.get_str(16) << endl;
 
-    mpz_class decrypted;
+    string decrypted;
     dec(decrypted, ciphertext, d, n);
-    string decrypted_message;
-    numToString(decrypted_message, decrypted);
-    cout << "Decrypted message: " << decrypted_message << endl;
+    cout << "Decrypted message: " << decrypted<< endl;
 
     return 0;
 }
