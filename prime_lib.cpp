@@ -2,6 +2,7 @@
 #include<gmpxx.h>
 #include<array>
 #include "lib/base.h"
+#include "lib/op_mod.h"
 
 using namespace std;
 
@@ -37,12 +38,11 @@ bool miller_rabin(
     const mpz_class& a) {
     mpz_class x;
 
-    // mpz_powm(x.get_mpz_t(), a.get_mpz_t(), d.get_mpz_t(), n.get_mpz_t());
     x = mod_exp_window(a, d, n);
     if (x == 1 || x == n_1) return true;
     for (unsigned long r = 1; r < s; ++r) {
-        mpz_mul(x.get_mpz_t(), x.get_mpz_t(), x.get_mpz_t()); //alt ?
-        x=modulo( x, n);
+        x= mulmod(x, x, n); //alt ?
+        // x=modulo( x, n);
         if (x == n_1) return true;
     }
     return false;
