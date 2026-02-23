@@ -80,16 +80,3 @@ bool  primTest(const mpz_class& n){
 
     return true;
 }
-
-
-
-int main() {
-    gmp_randclass rng(gmp_randinit_default);
-    rng.seed(time(nullptr));
-
-    unsigned long bits = 512;
-    mpz_class prime = genAlea(rng, bits);
-    cout << "Generated prime: " << prime.get_str(16) ;
-
-    return 0;
-}

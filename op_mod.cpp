@@ -1,26 +1,6 @@
-#include <iostream>
-#include <gmpxx.h>
-#include "lib/base.h"
+#include "lib/op_mod.h"
 
 
-
-
-mpz_class modexp(mpz_class base, mpz_class exp, const mpz_class& modn) {
-    mpz_class result = 1;
-
-    base = modulo(base, modn);
-
-    while (exp > 0) {
-        if (modulo(exp, 2) == 1) {
-            result = modulo(result * base, modn);
-        }
-
-        exp = exp / 2;
-        base = modulo(base * base, modn);
-    }
-
-    return result;
-}
 
 mpz_class mulmod(const mpz_class& A, const mpz_class& B, const mpz_class& n) {
     mpz_class a = modulo(A, n);
@@ -33,8 +13,6 @@ mpz_class mulmod(const mpz_class& A, const mpz_class& B, const mpz_class& n) {
 std::tuple<mpz_class, mpz_class, mpz_class> extended_gcd(mpz_class A, mpz_class B) {
     mpz_class x0 = 1, y0 = 0;
     mpz_class x1 = 0, y1 = 1;
-    mpz_t q;
-    mpz_init(q);
 
     while (B != 0) {
         mpz_class q = quotient(A, B);
@@ -62,19 +40,4 @@ mpz_class invmod(const mpz_class& A, const mpz_class& n) {
         throw std::runtime_error("Inverse modulaire inexistant");
     }
     return modulo(x, n); // on normalise avec mod pour avoir un positif
-}
-
-int main() {
-    mpz_class base("12345678901234567890");
-    mpz_class exponent("12345");
-    mpz_class modulus("987654321");
-    mpz_class A = 17;
-    mpz_class n = 3120;
-
-    mpz_class result = modexp(base, exponent, modulus);
-    std::cout << "Inverse modulaire: " << invmod(A, n) << std::endl;
-
-    std::cout << "Resultat: " << result << std::endl;
-
-    return 0;
 }

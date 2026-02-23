@@ -2,7 +2,7 @@
 
 
 using namespace std;
-// La fonction renommée "modulo" comme vous le souhaitiez
+
 mpz_class modulo(mpz_class a, mpz_class n) {
     // Sécurité : n = 0
     if (n == 0) {
@@ -214,3 +214,6 @@ mpz_class division_euclidienne(mpz_class a, mpz_class n, mpz_class &r) {
     }
     return q; 
 }
+
+
+

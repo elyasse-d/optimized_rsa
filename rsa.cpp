@@ -2,13 +2,17 @@
 #include<gmpxx.h>
 #include "lib/base.h"
 #include "lib/prime_lib.h"
+#include "lib/op_mod.h"
+
 
 using namespace std;
 
 
 void keyGen(unsigned long bits, gmp_randclass& rng, mpz_class& n, mpz_class& e, mpz_class& d, mpz_class& p, mpz_class& q, mpz_class& phi) {
     p = genAlea(rng, bits / 2);
-    q = genAlea(rng, bits / 2);
+    do {
+        q = genAlea(rng, bits / 2);
+    } while (q == p);
     n = p * q;
     phi = (p - 1) * (q - 1);
 
@@ -18,7 +22,8 @@ void keyGen(unsigned long bits, gmp_randclass& rng, mpz_class& n, mpz_class& e, 
         e += 2; // Incrémenter e jusqu'à ce qu'il soit premier avec phi
     }
 
-    if (inversMod(d, e, phi) == 0) {
+    d = invmod(e, phi);
+    if(d == 0) {
         throw runtime_error("Failed to compute modular inverse for d");
     }
 }
