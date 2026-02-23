@@ -38,7 +38,7 @@ bool miller_rabin(
     mpz_class x;
 
     // mpz_powm(x.get_mpz_t(), a.get_mpz_t(), d.get_mpz_t(), n.get_mpz_t());
-    x = ExpoMod(a, d, n);
+    x = mod_exp_window(a, d, n);
     if (x == 1 || x == n_1) return true;
     for (unsigned long r = 1; r < s; ++r) {
         mpz_mul(x.get_mpz_t(), x.get_mpz_t(), x.get_mpz_t()); //alt ?
