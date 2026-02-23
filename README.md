@@ -1,5 +1,5 @@
 # optimized_rsa
-L’objectif de ce projet est d’implémenter les différentes fonctionnalités du RSA avec la contrainte de ne pas disposer de fonctions mathématiques évoluées, et de se limiter aux seules quatre opérations de base sur grands entiers. Cette limitation permet de se rapprocher d’un contexte de développement du RSA en environnement contraint comme par exemple la programmation d’un cryptoprocesseur pour carte à puce.
+L’objectif de ce projet est d’implémenter les différentes fonctionnalités du RSA avec la contrainte de ne pas disposer de fonctions mathématiques évoluées, et de se limiter aux quatre opérations de base sur les grands entiers. Cette limitation permet de se rapprocher d’un contexte de développement du RSA en environnement contraint comme par exemple la programmation d’un cryptoprocesseur pour carte à puce.
 
 
 # 📁 Structure du Projet
