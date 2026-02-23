@@ -42,7 +42,7 @@ bool miller_rabin(
     if (x == 1 || x == n_1) return true;
     for (unsigned long r = 1; r < s; ++r) {
         mpz_mul(x.get_mpz_t(), x.get_mpz_t(), x.get_mpz_t()); //alt ?
-        modulo(x.get_mpz_t(), x.get_mpz_t(), n.get_mpz_t());
+        x=modulo( x, n);
         if (x == n_1) return true;
     }
     return false;
