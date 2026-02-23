@@ -10,6 +10,12 @@ mpz_class modulo(mpz_class a, mpz_class n) {
         return 0;
     }
 
+    // Cas négatif : on normalise d'abord
+    if (a < 0) {
+        mpz_class pos = modulo(-a, n);
+        return (pos == 0) ? pos : n - pos;
+    }
+
     // Cas simple
     if (a < n) return a;
 
@@ -32,6 +38,9 @@ mpz_class modulo(mpz_class a, mpz_class n) {
         // C'est l'opération de base équivalente à mpz_tdiv_q_2exp
         m = m/2; // Division par 2 (décalage à droite)
     }
+
+    // Cas négatif : normaliser dans [0, n)
+    if (r < 0) r = r + n;
 
     return r;
 }
@@ -179,4 +188,29 @@ void numToString(string& str, const mpz_class& num) {
         str = c + str;
         temp = temp >> 8;
     }
+}
+
+mpz_class division_euclidienne(mpz_class a, mpz_class n, mpz_class &r) {
+    if (n == 0) return 0;
+    if (a < n) { r = a; return 0; }
+
+    r = a;           
+    mpz_class q = 0; 
+    mpz_class m = n; 
+    mpz_class p = 1; 
+
+    while ((m + m) <= r) {
+        m = m + m; 
+        p = p + p; 
+    }
+
+    while (m >= n) {
+        if (r >= m) {
+            r = r - m; 
+            q = q + p;
+        }
+        m = m / 2; 
+        p = p / 2; 
+    }
+    return q; 
 }
