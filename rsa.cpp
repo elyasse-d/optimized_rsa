@@ -39,28 +39,17 @@ void dec(string& m, const mpz_class& c, const mpz_class& d, const mpz_class& n) 
     numToString(m, decrypted);
 }
 
-void sing();  
-bool verify();
-
-
-int main() {
-    gmp_randclass rng(gmp_randinit_default);
-    rng.seed(time(nullptr));
-
-    mpz_class n, e, d, p, q, phi;
-    keyGen(1024, rng, n, e, d, p, q, phi);
-
-    cout << "Public key (n, e): (" << n.get_str(16) << ", " << e.get_str(16) << ")" << endl;
-    cout << "Private key (d): " << d.get_str(16) << endl;
-
-    string message = "Hello RSA!";
-    mpz_class ciphertext;
-    enc(ciphertext, message, e, n);
-    cout << "Ciphertext: " << ciphertext.get_str(16) << endl;
-
-    string decrypted;
-    dec(decrypted, ciphertext, d, n);
-    cout << "Decrypted message: " << decrypted<< endl;
-
-    return 0;
+void sing(mpz_class& signature, const string& message, const mpz_class& d, const mpz_class& n) {
+    mpz_class m_num;
+    stringToNum(m_num, message);
+    signature = mod_exp_window(m_num, d, n);
 }
+
+bool verify(const mpz_class& signature, const string& message, const mpz_class& e, const mpz_class& n) {
+    mpz_class m_num;
+    stringToNum(m_num, message);
+    mpz_class decrypted = mod_exp_window(signature, e, n);
+    return decrypted == m_num;
+}
+
+
